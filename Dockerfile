@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# install requirements for trimip -r requirements.txt
+# install requirements for rip -r requirements.txt
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     libavformat-dev \
@@ -40,7 +40,5 @@ WORKDIR /usr/src/app
 COPY requirements.txt ./
 RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 RUN TCNN_CUDA_ARCHITECTURES=89 pip install git+https://github.com/NVlabs/tiny-cuda-nn/#subdirectory=bindings/torch
-
-# Install nvdiffrast: https://nvlabs.github.io/nvdiffrast/#linux
 
 RUN pip3 install --no-cache-dir -r requirements.txt
