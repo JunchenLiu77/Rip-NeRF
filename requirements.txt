@@ -19,7 +19,6 @@ opencv-python==4.6.0.66
 pandas==1.5.0
 Pillow==9.2.0
 plotly==5.7.0
-pycurl==7.43.0.6
 PyMCubes==0.1.2
 pyransac3d==0.6.0
 PyYAML==6.0

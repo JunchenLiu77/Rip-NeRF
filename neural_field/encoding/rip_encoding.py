@@ -7,7 +7,6 @@ from .rip_encoding_internal import multi_anisomip_interp
 
 @gin.configurable()
 class RipEncoding(nn.Module):
-
     def __init__(
         self,
         n_levels: int = 8,
@@ -95,7 +94,6 @@ class RipEncoding(nn.Module):
             else:
                 raise NotImplementedError
         elif plane_distribution == "spherical_white_noise":
-            # vertices distributed in spherical white noise
             theta, phi = torch.rand(n_vertices) * math.pi, torch.rand(n_vertices) * 2 * math.pi
             vertices = torch.stack([
                 torch.sin(theta) * torch.cos(phi),

@@ -170,7 +170,6 @@ log/
 events.out.*
 
 # Data
-data
 !*/data
 
 # Misc
@@ -186,7 +185,7 @@ cache/
 package-lock.json
 camera_paths/
 exp/
-*/._DS_Store
+*/.DS_Store
 .vscode/
 launch_logs/
 **/binary

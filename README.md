@@ -1,49 +1,38 @@
-# Tri-MipRF
+# Rip-NeRF
 
 Official PyTorch implementation of the paper:
 
-> **Tri-MipRF: Tri-Mip Representation for Efficient Anti-Aliasing Neural Radiance Fields**
+> **Rip-NeRF: Anti-aliasing Radiance Fields with Ripmap-Encoded Platonic Solids**
 >
-> ***ICCV 2023***
+> ***SIGGRAPH 2024***
 >
-> Wenbo Hu, Yuling Wang, Lin Ma, Bangbang Yang, Lin Gao, Xiao Liu, Yuewen Ma
+> Junchen Liu\*, Wenbo Hu\*, Zhuo Yang\*, Jianteng Chen, Guoliang Wang, Xiaoxue Chen, Yantong Cai, Huan-ang Gao, Hao Zhao
 >
-> <a href='https://arxiv.org/abs/2307.11335'><img src='https://img.shields.io/badge/arXiv-2307.11335-red'></a> <a href='https://wbhu.github.io/projects/Tri-MipRF'><img src='https://img.shields.io/badge/Project-Video-Green'></a>
+> <a href='TODO'><img src='https://img.shields.io/badge/arXiv-2307.11335-red'></a> <a href='https://junchenliu77.github.io/Rip-NeRF'><img src='https://img.shields.io/badge/Project-Video-Green'></a>
 
-https://github.com/wbhu/Tri-MipRF/assets/11834645/6c50baf7-ac46-46fd-a36f-172f99ea9054
+TODO: video
 
 
-> <b>Instant-ngp (left)</b> suffers from aliasing in distant or low-resolution views and blurriness in
-> close-up shots, while <b>Tri-MipRF (right)</b> renders both fine-grained details in close-ups
-> and high-fidelity zoomed-out images.
+> TODO: describe it.
 
 <p align="center">
-<img src="assets/overview.jpg" width="97%"/>
+<img src="assets/overview.png" width="100%"/>
 </p>
 
-> To render a pixel, we emit a <b>cone</b> from the camera’s projection center to the pixel on the
-> image plane, and then we cast a set of spheres inside the cone. Next, the spheres are
-> orthogonally projected
-> on the three planes and featurized by our <b>Tri-Mip encoding</b>. After that the feature
-> vector is fed into the tiny MLP to non-linearly map to
-> density and color. Finally, the density and
-> color of the spheres are integrated using volume rendering to produce final color for the pixel.
 
+> To render a pixel, we first cast a cone for each pixel, and then divide the cone into multiple conical frustums, which are further            characterized by anisotropic 3D Gaussians parameterized by their mean and covariance (𝝁, 𝚺). Next, to featurize a 3D Gaussian, we project it onto the unparalleled faces of the Platonic solid to form a 2D Gaussian (𝝁<sub>proj</sub>, 𝚺<sub>proj</sub>), while the Platonic solid's faces are represented by the Ripmap Encoding with learnable parameters. Subsequently, we perform tetra-linear interpolation on the Ripmap Encoding to query corresponding feature vectors for the 2D Gaussian, where the position and level used in the interpolation are determined by the mean and covariance of the 2D Gaussian, respectively. Finally, feature vectors from all Platonic solids' faces and the encoded view direction are aggregated together to estimate the color and density of the conical frustums by a tiny MLP.
 
 <p align="center">
-<img src="assets/teaser.jpg" width="50%"/>
+<img src="assets/teaser.png" width="100%"/>
 </p>
 
-> Our Tri-MipRF achieves state-of-the-art rendering quality while can be reconstructed efficiently,
-> compared with cutting-edge radiance fields methods, <i>e.g.,</i> NeRF, MipNeRF, Plenoxels,
-> TensoRF, and Instant-ngp. Equipping Instant-ngp with super-sampling (named Instant-ngp<sup>↑5×</sup>)
-> improves the rendering quality to a certain extent but significantly slows down the reconstruction.
+
+> Qualitative and quantitative results of our Rip-NeRF and several representative baseline methods, e.g. Zip-NeRF, Tri-MipRF, etc. Rip-NeRF<sub>25k</sub> is a variant of Rip-NeRF that reduces the training iterations from 120𝑘 to 25𝑘 for better efficiency. The first and second rows in the left panel are results from the multi-scale Blender dataset and our newly captured real-world dataset, respectively. Our Rip-NeRF can render high-fidelity and aliasing-free images from novel viewpoints while maintaining efficiency.
 
 ## **Installation**
-Please install the following dependencies first
+We use Python 3.9. Please install the following dependencies first
 - [PyTorch (1.13.1 + cu11.6)](https://pytorch.org/get-started/locally/) 
 - [tiny-cuda-nn](https://github.com/NVlabs/tiny-cuda-nn)
-- [nvdiffrast](https://nvlabs.github.io/nvdiffrast/)
 
 And then install the following dependencies using *pip*
 ```shell
@@ -68,7 +57,6 @@ pip3 install av==9.2.0 \
     pandas==1.5.0 \
     Pillow==9.2.0 \
     plotly==5.7.0 \
-    pycurl==7.43.0.6 \
     PyMCubes==0.1.2 \
     pyransac3d==0.6.0 \
     PyYAML==6.0 \
@@ -93,7 +81,7 @@ pip3 install av==9.2.0 \
     segmentation-refinement \
     xatlas \
     protobuf==3.20.0 \
-	jinja2 \
+    jinja2 \
     click==8.1.7 \
     tensorboardx \
     termcolor
@@ -112,25 +100,15 @@ python scripts/convert_blender_data.py --blenderdir /path/to/nerf_synthetic --ou
 
 ## **Training and evaluation**
 ```shell
-python main.py --ginc config_files/ms_blender/TriMipRF.gin 
+python main.py --ginc config_files/ms_blender.gin 
 ```
-
-
-## **TODO**
-
-- [x] ~~Release source code~~.
 
 ## **Citation**
 
 If you find the code useful for your work, please star this repo and consider citing:
 
 ```
-@inproceedings{hu2023Tri-MipRF,
-        author      = {Hu, Wenbo and Wang, Yuling and Ma, Lin and Yang, Bangbang and Gao, Lin and Liu, Xiao and Ma, Yuewen},
-        title       = {Tri-MipRF: Tri-Mip Representation for Efficient Anti-Aliasing Neural Radiance Fields},
-        booktitle   = {ICCV},
-        year        = {2023}
-}
+TODO
 ```
 
 
@@ -138,4 +116,5 @@ If you find the code useful for your work, please star this repo and consider ci
 
 - [Mip-NeRF (ICCV 2021)](https://jonbarron.info/mipnerf/)
 - [Instant-ngp (SIGGRAPH 2022)](https://nvlabs.github.io/instant-ngp/)
+- [Tri-MipRF (ICCV 2023)](https://wbhu.github.io/projects/Tri-MipRF/)
 - [Zip-NeRF (ICCV 2023)](https://jonbarron.info/zipnerf/)
