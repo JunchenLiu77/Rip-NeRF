@@ -165,6 +165,7 @@ cython_debug/
 # Experiments and outputs
 runs/
 outputs/
+log/
 # tensorboard log files
 events.out.*
 
