@@ -8,7 +8,7 @@ RayDataset.scene = 'chair'
 RayDataset.scene_type = 'nerf_synthetic'
 
 Trainer.base_exp_dir = './log'
-Trainer.exp_name = None
+Trainer.exp_name = 'base'
 Trainer.eval_step = 25000
 Trainer.log_step = 1000
 Trainer.max_steps = 25001
