@@ -22,6 +22,7 @@ class RipEncoding(nn.Module):
         super(RipEncoding, self).__init__()
         self.n_levels = n_levels
         self.plane_res = plane_res
+        self.log2_phane_res = torch.log2(torch.tensor(plane_res, dtype=torch.float32))
         self.feature_dim = feature_dim
         self.n_vertices = n_vertices
         self.level_offset = level_offset
@@ -29,111 +30,101 @@ class RipEncoding(nn.Module):
         self.learn_thetas = learn_thetas
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
-        # TODO: data, generate vertices and projection matrix, should we include them?
         self.projection_matrix_list = []
-        if plane_distribution != "optimized":
-            if plane_distribution == "planotic_solid":
-                # vertices of regular polyhedron
-                if n_vertices == 3:
-                    # cube
-                    vertices = torch.tensor(
-                        [
-                            [1.0, 0, 0],
-                            [0, 1.0, 0],
-                            [0, 0, 1.0],
-                        ]
-                    )
-                elif n_vertices == 4:
-                    # tetrahedron
-                    # r2 = math.sqrt(2)
-                    # vertices = torch.tensor(
-                    #     [
-                    #         [r2, 0, -1.0],
-                    #         [-r2, 0, -1.0],
-                    #         [0, r2, 1.0],
-                    #         [0, -r2, 1.0],
-                    #     ]
-                    # )
-                    # octahedron
-                    vertices = torch.tensor(
-                        [
-                            [1.0, 1.0, 1.0],
-                            [1.0, 1.0, -1.0],
-                            [1.0, -1.0, 1.0],
-                            [1.0, -1.0, -1.0],
-                        ]
-                    )
-                elif n_vertices == 6:
-                    # icosahedron
-                    phi = (1 + math.sqrt(5)) / 2
-                    vertices = torch.tensor(
-                        [
-                            [0, 1.0, phi],
-                            [0, -1.0, phi],
-                            [1.0, phi, 0],
-                            [-1.0, phi, 0],
-                            [phi, 0, 1.0],
-                            [phi, 0, -1.0],
-                        ]
-                    )
-                elif n_vertices == 10:
-                    # dodecahedron
-                    phi = (1 + math.sqrt(5)) / 2
-                    vertices = torch.tensor(
-                        [
-                            [1.0, 1.0, 1.0],
-                            [1.0, 1.0, -1.0],
-                            [1.0, -1.0, 1.0],
-                            [1.0, -1.0, -1.0],
-                            [0, phi, 1.0 / phi],
-                            [0, phi, -1.0 / phi],
-                            [1.0 / phi, 0, phi],
-                            [1.0 / phi, 0, -phi],
-                            [phi, 1.0 / phi, 0],
-                            [phi, -1.0 / phi, 0],
-                        ]
-                    )
-                else:
-                    raise NotImplementedError
-            elif plane_distribution == "spherical_white_noise":
-                # vertices distributed in spherical white noise
-                theta, phi = torch.rand(n_vertices) * math.pi, torch.rand(n_vertices) * 2 * math.pi
-                vertices = torch.stack([
-                    torch.sin(theta) * torch.cos(phi),
-                    torch.sin(theta) * torch.sin(phi),
-                    torch.cos(theta)
-                ], dim=-1)
+        if plane_distribution == "planotic_solid":
+            # vertices of regular polyhedron
+            if n_vertices == 3:
+                # cube
+                vertices = torch.tensor(
+                    [
+                        [1.0, 0, 0],
+                        [0, 1.0, 0],
+                        [0, 0, 1.0],
+                    ]
+                )
+            elif n_vertices == 4:
+                # tetrahedron
+                # r2 = math.sqrt(2)
+                # vertices = torch.tensor(
+                #     [
+                #         [r2, 0, -1.0],
+                #         [-r2, 0, -1.0],
+                #         [0, r2, 1.0],
+                #         [0, -r2, 1.0],
+                #     ]
+                # )
+                # octahedron
+                vertices = torch.tensor(
+                    [
+                        [1.0, 1.0, 1.0],
+                        [1.0, 1.0, -1.0],
+                        [1.0, -1.0, 1.0],
+                        [1.0, -1.0, -1.0],
+                    ]
+                )
+            elif n_vertices == 6:
+                # icosahedron
+                phi = (1 + math.sqrt(5)) / 2
+                vertices = torch.tensor(
+                    [
+                        [0, 1.0, phi],
+                        [0, -1.0, phi],
+                        [1.0, phi, 0],
+                        [-1.0, phi, 0],
+                        [phi, 0, 1.0],
+                        [phi, 0, -1.0],
+                    ]
+                )
+            elif n_vertices == 10:
+                # dodecahedron
+                phi = (1 + math.sqrt(5)) / 2
+                vertices = torch.tensor(
+                    [
+                        [1.0, 1.0, 1.0],
+                        [1.0, 1.0, -1.0],
+                        [1.0, -1.0, 1.0],
+                        [1.0, -1.0, -1.0],
+                        [0, phi, 1.0 / phi],
+                        [0, phi, -1.0 / phi],
+                        [1.0 / phi, 0, phi],
+                        [1.0 / phi, 0, -phi],
+                        [phi, 1.0 / phi, 0],
+                        [phi, -1.0 / phi, 0],
+                    ]
+                )
             else:
-                import numpy as np
-                assert plane_distribution == "spherical_blue_noise" or plane_distribution == "golden_spiral"
-                save_path = f"./data/{plane_distribution}_{n_vertices}.npy"
-                vertices = torch.tensor(np.load(save_path), dtype=torch.float32)
-                assert vertices.shape[0] == n_vertices
-
-            self.vertices = (
-                vertices / torch.linalg.norm(vertices, dim=-1, keepdim=True)
-            ).to(self.device)
-
-            for i in range(n_vertices):
-                axis = self.vertices[i]
-                # find any set of standard orthogonal bases
-                if axis[0] != 0 or axis[1] != 0:
-                    p0 = torch.tensor([-axis[1], axis[0], 0.0]).to(self.device)
-                else:
-                    p0 = torch.tensor([0.0, -axis[2], axis[1]]).to(self.device)
-                p1 = torch.cross(axis, p0)
-                p0 /= torch.norm(p0)
-                p1 /= torch.norm(p1)
-                P = torch.stack([p0, p1], dim=0)
-                self.projection_matrix_list.append(P)
+                raise NotImplementedError
+        elif plane_distribution == "spherical_white_noise":
+            # vertices distributed in spherical white noise
+            theta, phi = torch.rand(n_vertices) * math.pi, torch.rand(n_vertices) * 2 * math.pi
+            vertices = torch.stack([
+                torch.sin(theta) * torch.cos(phi),
+                torch.sin(theta) * torch.sin(phi),
+                torch.cos(theta)
+            ], dim=-1)
         else:
             import numpy as np
-            save_path = f"./data/rotation_matrix_{n_vertices}.npy"
-            rotation_matrixs = np.load(save_path)
-            for i in range(n_vertices):
-                R = torch.tensor(rotation_matrixs[i], dtype=torch.float32).to(self.device)
-                P = R[:2, :]
-                self.projection_matrix_list.append(P)
+            assert plane_distribution == "spherical_blue_noise" or plane_distribution == "golden_spiral"
+            save_path = f"./data/{plane_distribution}_{n_vertices}.npy"
+            vertices = torch.tensor(np.load(save_path), dtype=torch.float32)
+            assert vertices.shape[0] == n_vertices
+
+        self.vertices = (
+            vertices / torch.linalg.norm(vertices, dim=-1, keepdim=True)
+        ).to(self.device)
+
+        for i in range(n_vertices):
+            axis = self.vertices[i]
+            # find any set of standard orthogonal bases
+            if axis[0] != 0 or axis[1] != 0:
+                p0 = torch.tensor([-axis[1], axis[0], 0.0]).to(self.device)
+            else:
+                p0 = torch.tensor([0.0, -axis[2], axis[1]]).to(self.device)
+            p1 = torch.cross(axis, p0)
+            p0 /= torch.norm(p0)
+            p1 /= torch.norm(p1)
+            P = torch.stack([p0, p1], dim=0)
+            self.projection_matrix_list.append(P)
 
         self.register_parameter(
             "fm",
@@ -206,7 +197,7 @@ class RipEncoding(nn.Module):
                 level = (
                     torch.log2(sigmas) + self.level_offset
                 )
-            level = level + torch.log2(self.plane_res)
+            level = level + self.log2_phane_res
             level = torch.clamp(level, 0, self.n_levels - 1)
             input_list.append(means_proj)
             input_list.append(level)

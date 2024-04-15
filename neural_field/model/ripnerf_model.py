@@ -32,7 +32,7 @@ class RipNerfModel(RFModel):
         self.ray_sampler.every_n_step(
             step=step,
             occ_eval_fn=lambda x: self.field.query_density(
-                x=self.contraction(x),
+                means=self.contraction(x),
                 occ_res=self.ray_sampler.resolution[0],
             )['density']
             * self.render_step_size,

@@ -47,10 +47,7 @@ def main(
     )
 
     logger.info("==> Init model ...")
-    model = get_model(model_name=model_name)(
-        aabb=train_dataset.aabb,
-        bs_radius=train_dataset.bs_radius,
-    )
+    model = get_model(model_name=model_name)(aabb=train_dataset.aabb)
     logger.info(model)
 
     logger.info("==> Init trainer ...")

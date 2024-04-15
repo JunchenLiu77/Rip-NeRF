@@ -3,11 +3,11 @@ main.num_workers = 16
 main.model_name = 'Rip-NeRF'
 main.batch_size = 28 # this is not the actual batch_size, but the prefetch size
 
-RayDataset.base_path = '/path/to/nerf_synthetic'
+RayDataset.base_path = '../dataset/nerf_synthetic'
 RayDataset.scene = 'chair'
 RayDataset.scene_type = 'nerf_synthetic'
 
-Trainer.base_exp_dir = '/path/to/experiment/lod/dir'
+Trainer.base_exp_dir = './log'
 Trainer.exp_name = None
 Trainer.eval_step = 25000
 Trainer.log_step = 1000
@@ -18,7 +18,6 @@ RipNerfModel.samples_per_ray = 1024
 RipNerfModel.occ_res = 128
 RipNerfModel.occ_thre = 5e-3
 
-RipNerf.feature_dim = 16
 RipNerf.net_depth_base = 2
 RipNerf.net_depth_color = 4
 RipNerf.net_width = 128

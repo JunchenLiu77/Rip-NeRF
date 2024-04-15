@@ -5,11 +5,10 @@ import gin
 import torch
 from torch import nn
 import torch.nn.functional as F
-from torchmetrics.functional.image import (
-    peak_signal_noise_ratio,
-    structural_similarity_index_measure,
-    learned_perceptual_image_patch_similarity,
-)
+
+from torchmetrics.image.psnr import PeakSignalNoiseRatio
+from torchmetrics.image.ssim import StructuralSimilarityIndexMeasure
+from torchmetrics.image.lpip import LearnedPerceptualImagePatchSimilarity
 
 from utils.ray import RayBundle
 from utils.render_buffer import RenderBuffer
@@ -39,6 +38,10 @@ class RFModel(nn.Module):
         ), "Current implementation only supports cube aabb"
         self.field = None
         self.ray_sampler = None
+        
+        self.psnr = PeakSignalNoiseRatio(data_range=1.0)
+        self.ssim = StructuralSimilarityIndexMeasure(data_range=1.0)
+        self.lpips = LearnedPerceptualImagePatchSimilarity(net_type='vgg', normalize=True)
 
     def contraction(self, means, covs=None):
         # contract means to [0, 1]
@@ -117,27 +120,18 @@ class RFModel(nn.Module):
         # quality
         if len(rb.rgb.shape) == 2:
             quality = {
-                'PSNR': peak_signal_noise_ratio(
-                    rb.rgb, target.rgb, data_range=(0, 1)
-                ).item(),
+                'PSNR': self.psnr(rb.rgb, target.rgb).item(),
             }
         else:
             rgb_clipped = torch.clip(rb.rgb, min=0, max=1)
             target_clipped = torch.clip(target.rgb, min=0, max=1)
             quality = {
-                'PSNR': peak_signal_noise_ratio(
-                    rgb_clipped, target_clipped, data_range=(0, 1)
-                ).item(),
-                'SSIM': structural_similarity_index_measure(
+                'PSNR': self.psnr(rgb_clipped, target_clipped).item(),
+                'SSIM': self.ssim(
                     rgb_clipped.permute(2, 0, 1).unsqueeze(0),
-                    target_clipped.permute(2, 0, 1).unsqueeze(0),
-                    data_range=(0, 1),
-                ).item(),
-                'LPIPS': learned_perceptual_image_patch_similarity(
+                    target_clipped.permute(2, 0, 1).unsqueeze(0)).item(),
+                'LPIPS': self.lpips(
                     rgb_clipped.permute(2, 0, 1).unsqueeze(0),
-                    target_clipped.permute(2, 0, 1).unsqueeze(0),
-                    normalize=True,
-                    net_type='vgg',
-                ).item(),
+                    target_clipped.permute(2, 0, 1).unsqueeze(0)).item(),
             }
         return {**ray_info, **quality}
