@@ -125,7 +125,7 @@ def convert_to_nerfdata(basedir, newdir, n_down):
         json.dump(bigmeta, f, ensure_ascii=False, indent=4)
 
 
-def main():
+def main(unused_argv):
     blenderdir = FLAGS.blenderdir
     outdir = FLAGS.outdir
     n_down = FLAGS.n_down

@@ -44,8 +44,9 @@ pip3 install absl-py \
     tensorboardX \
     termcolor \
     torchmetrics==0.10.0 \
+    torchmetrics[image] \
     torchtyping==0.1.4 \
-    tqdm==4.64.1 \
+    tqdm==4.64.1
 ```
 
 ## **Data**

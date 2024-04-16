@@ -22,7 +22,7 @@ def load_data(
         else:
             for k, v in meta.items():
                 v.extend(m[k])
-    assert meta is dict
+    assert isinstance(meta, dict)
 
     pix2cam = meta['pix2cam']
     poses = meta['cam2world']
