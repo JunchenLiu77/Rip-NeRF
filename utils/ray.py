@@ -1,5 +1,5 @@
 import torch
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 from utils.tensor_dataclass import TensorDataclass
@@ -7,16 +7,16 @@ from utils.tensor_dataclass import TensorDataclass
 
 @dataclass
 class RayBundle(TensorDataclass):
-    origins: Optional[torch.Tensor] = None
+    origins: torch.Tensor = field(default_factory=lambda: torch.Tensor())
     """Ray origins (XYZ)"""
 
-    directions: Optional[torch.Tensor] = None
+    directions: torch.Tensor = field(default_factory=lambda: torch.Tensor())
     """Unit ray direction vector"""
 
-    radii: Optional[torch.Tensor] = None
+    radii: torch.Tensor = field(default_factory=lambda: torch.Tensor())
     """Ray image plane intersection circle radii"""
 
-    ray_cos: Optional[torch.Tensor] = None
+    ray_cos: torch.Tensor = field(default_factory=lambda: torch.Tensor())
     """Ray cos"""
 
     def __len__(self):
@@ -30,12 +30,10 @@ class RayBundle(TensorDataclass):
 
 @dataclass
 class RayBundleExt(RayBundle):
-
     ray_depth: Optional[torch.Tensor] = None
 
 
 @dataclass
 class RayBundleRast(RayBundleExt):
-
     ray_uv: Optional[torch.Tensor] = None
     ray_mip_level: Optional[torch.Tensor] = None

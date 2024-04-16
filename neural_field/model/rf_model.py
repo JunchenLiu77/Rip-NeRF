@@ -38,10 +38,12 @@ class RFModel(nn.Module):
         ), "Current implementation only supports cube aabb"
         self.field = None
         self.ray_sampler = None
-        
+
         self.psnr = PeakSignalNoiseRatio(data_range=1.0)
         self.ssim = StructuralSimilarityIndexMeasure(data_range=1.0)
-        self.lpips = LearnedPerceptualImagePatchSimilarity(net_type='vgg', normalize=True)
+        self.lpips = LearnedPerceptualImagePatchSimilarity(
+            net_type='vgg', normalize=True
+        )
 
     def contraction(self, means, covs=None):
         # contract means to [0, 1]
@@ -129,9 +131,11 @@ class RFModel(nn.Module):
                 'PSNR': self.psnr(rgb_clipped, target_clipped).item(),
                 'SSIM': self.ssim(
                     rgb_clipped.permute(2, 0, 1).unsqueeze(0),
-                    target_clipped.permute(2, 0, 1).unsqueeze(0)).item(),
+                    target_clipped.permute(2, 0, 1).unsqueeze(0),
+                ).item(),
                 'LPIPS': self.lpips(
                     rgb_clipped.permute(2, 0, 1).unsqueeze(0),
-                    target_clipped.permute(2, 0, 1).unsqueeze(0)).item(),
+                    target_clipped.permute(2, 0, 1).unsqueeze(0),
+                ).item(),
             }
         return {**ray_info, **quality}

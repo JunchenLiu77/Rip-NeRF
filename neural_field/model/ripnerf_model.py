@@ -149,7 +149,7 @@ class RipNerfModel(RFModel):
             t_ends,
             ray_indices,
             rays,
-            rgb_sigma_fn=rgb_sigma_fn,
+            rgb_sigma_fn,
             render_bkgd=background_color,
         )
 
@@ -161,7 +161,7 @@ class RipNerfModel(RFModel):
         ray_indices: torch.Tensor,
         rays: RayBundle,
         # radiance field
-        rgb_sigma_fn: Callable = None,  # rendering options
+        rgb_sigma_fn: Callable,  # rendering options
         render_bkgd: Optional[torch.Tensor] = None,
     ) -> RenderBuffer:
         n_rays = rays.origins.shape[0]

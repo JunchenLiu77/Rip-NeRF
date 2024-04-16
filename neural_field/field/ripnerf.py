@@ -1,5 +1,4 @@
-import math
-from typing import Callable
+from typing import Callable, Optional
 
 import gin
 import torch
@@ -44,7 +43,9 @@ class RipNerf(nn.Module):
             },
         )
         self.mlp_head = tcnn.Network(
-            n_input_dims=self.direction_encoding.n_output_dims + feature_dim - 1,
+            n_input_dims=self.direction_encoding.n_output_dims
+            + feature_dim
+            - 1,
             n_output_dims=3,
             network_config={
                 "otype": "FullyFusedMLP",
@@ -58,8 +59,8 @@ class RipNerf(nn.Module):
     def query_density(
         self,
         means: Tensor,  # [0, 1]
-        covs: Tensor = None,
-        occ_res: Tensor = None,
+        covs: Optional[Tensor] = None,
+        occ_res: Optional[Tensor] = None,
         return_feat: bool = False,
     ):
         means = means * 2.0 - 1.0  # [-1, 1]

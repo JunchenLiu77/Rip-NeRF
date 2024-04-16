@@ -22,6 +22,7 @@ def load_data(
         else:
             for k, v in meta.items():
                 v.extend(m[k])
+    assert meta is dict
 
     pix2cam = meta['pix2cam']
     poses = meta['cam2world']
@@ -69,7 +70,7 @@ def load_data(
     cameras = [cameras[i] for i in cam_list]
     frames = {i: frames[j] for i, j in enumerate(cam_list)}
     poses = {i: poses[j] for i, j in enumerate(cam_list)}
-    
+
     outputs = {
         'frames': frames,
         'poses': poses,

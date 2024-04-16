@@ -20,6 +20,7 @@ def load_data(base_path: Path, scene: str, split: str):
                     v.extend(m[k])
                 else:
                     assert v == m[k]
+    assert meta is dict
 
     image_height, image_width = 800, 800
     camera_angle_x = float(meta["camera_angle_x"])

@@ -19,7 +19,6 @@ def main(
     batch_size: int = 16,
     model_name="Rip-NeRF",
 ):
-    stages = list(stages.split("_"))
     set_random_seed(seed)
 
     logger.info("==> Init dataloader ...")
@@ -80,17 +79,15 @@ if __name__ == "__main__":
     gin.parse_config_files_and_bindings(args.ginc, ginbs, finalize_config=False)
 
     exp_name = gin.query_parameter("Trainer.exp_name")
-    exp_name = (
-        "%s/%s/%s/%s"
-        % (
-            gin.query_parameter("RayDataset.scene_type"),
-            gin.query_parameter("RayDataset.scene"),
-            gin.query_parameter("main.model_name"),
+    exp_name = "%s/%s/%s/%s" % (
+        gin.query_parameter("RayDataset.scene_type"),
+        gin.query_parameter("RayDataset.scene"),
+        gin.query_parameter("main.model_name"),
+        (
             datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
             if exp_name is None
             else exp_name
-        )
-        
+        ),
     )
     gin.bind_parameter("Trainer.exp_name", exp_name)
     gin.finalize()

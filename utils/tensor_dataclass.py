@@ -282,7 +282,7 @@ class TensorDataclass:
         return _dict
 
     def reshape(
-            self: TensorDataclassT, shape: Tuple[int, ...]
+        self: TensorDataclassT, shape: Tuple[int, ...]
     ) -> TensorDataclassT:
         """Returns a new TensorDataclass with the same data but with a new shape.
 
@@ -309,8 +309,8 @@ class TensorDataclass:
         return self.reshape((-1,))
 
     def broadcast_to(
-            self: TensorDataclassT,
-            shape: Union[torch.Size, Tuple[int, ...]],
+        self: TensorDataclassT,
+        shape: Union[torch.Size, Tuple[int, ...]],
     ) -> TensorDataclassT:
         """Returns a new TensorDataclass broadcast to new shape.
 
@@ -355,8 +355,8 @@ class TensorDataclass:
 
     @staticmethod
     def direct_cat(
-            tds: List[TensorDataclassT],
-            dim: int = 0,
+        tds: List[TensorDataclassT],
+        dim: int = 0,
     ) -> TensorDataclassT:
         # cat_func = partial(torch.cat, dim=dim)
         def cat_func(arr):
@@ -369,8 +369,8 @@ class TensorDataclass:
 
     @staticmethod
     def direct_stack(
-            tds: List[TensorDataclassT],
-            dim: int = 0,
+        tds: List[TensorDataclassT],
+        dim: int = 0,
     ) -> TensorDataclassT:
         # cat_func = partial(torch.cat, dim=dim)
         def cat_func(arr):
@@ -399,22 +399,22 @@ class TensorDataclass:
             if None not in pair:
                 # Concatenating tensors of different dims where one is unsqueezed with dimensionality 1
                 if (
-                        pair[0].ndim == (pair[1].ndim + 1)
-                        and pair[0].shape[-1] == 1
+                    pair[0].ndim == (pair[1].ndim + 1)
+                    and pair[0].shape[-1] == 1
                 ):
                     pair = (pair[0], pair[1].unsqueeze(-1))
                 elif (
-                        pair[1].ndim == (pair[0].ndim + 1)
-                        and pair[1].shape[-1] == 1
+                    pair[1].ndim == (pair[0].ndim + 1)
+                    and pair[1].shape[-1] == 1
                 ):
                     pair = (pair[0].unsqueeze(-1), pair[1])
                 return torch.cat(pair, dim=dim)
             elif (
-                    pair[0] is not None and pair[1] is None
+                pair[0] is not None and pair[1] is None
             ):  # Channel is None for other but not self
                 return pair[0]
             elif (
-                    pair[0] is None and pair[1] is not None
+                pair[0] is None and pair[1] is not None
             ):  # Channel is None for self but not other
                 return pair[1]
             else:

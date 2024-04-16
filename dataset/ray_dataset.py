@@ -19,7 +19,6 @@ from utils.tensor_dataclass import TensorDataclass
 
 @gin.configurable()
 class RayDataset(Dataset):
-
     def __init__(
         self,
         base_path: str,
@@ -90,7 +89,7 @@ class RayDataset(Dataset):
         if self.training:
             return 10**9  # hack of streaming dataset
         else:
-            return sum([x.shape[0] for k, x in self.poses.items()])
+            return sum([x.shape[0] for _, x in self.poses.items()])
 
     def update_num_rays(self, num_rays):
         self.num_rays = num_rays

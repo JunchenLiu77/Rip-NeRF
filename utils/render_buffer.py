@@ -184,10 +184,8 @@ class RenderBuffer(TensorDataclass):
         RenderBuffer as input.
         """
         norm = lambda arr: ((arr + 1.0) / 2.0) if arr is not None else None
-        bwrgb = (
-            lambda arr: torch.cat([arr] * 3, dim=-1)
-            if arr is not None
-            else None
+        bwrgb = lambda arr: (
+            torch.cat([arr] * 3, dim=-1) if arr is not None else None
         )
         rgb8 = lambda arr: (arr * 255.0) if arr is not None else None
 

@@ -38,7 +38,9 @@ RUN apt-get update && apt-get install -y python3 python3-pip
 WORKDIR /usr/src/app
 
 COPY requirements.txt ./
-RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-RUN TCNN_CUDA_ARCHITECTURES=89 pip install git+https://github.com/NVlabs/tiny-cuda-nn/#subdirectory=bindings/torch
+RUN pip3 install torch torchvision torchaudio --no-cache-dir \
+    --index-url https://download.pytorch.org/whl/cu118
+RUN TCNN_CUDA_ARCHITECTURES=89 pip3 install --no-cache-dir \
+    git+https://github.com/NVlabs/tiny-cuda-nn/#subdirectory=bindings/torch
 
 RUN pip3 install --no-cache-dir -r requirements.txt

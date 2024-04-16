@@ -23,10 +23,10 @@ class Writer:
 
     @abstractmethod
     def write_image(
-            self,
-            name: str,
-            image: TensorType["H", "W", "C"],
-            step: int,
+        self,
+        name: str,
+        image: TensorType["H", "W", "C"],
+        step: int,
     ) -> None:
         """method to write out image
         Args:
@@ -38,10 +38,10 @@ class Writer:
 
     @abstractmethod
     def write_scalar(
-            self,
-            name: str,
-            scalar: Union[float, torch.Tensor],
-            step: int,
+        self,
+        name: str,
+        scalar: Union[float, torch.Tensor],
+        step: int,
     ) -> None:
         """Required method to write a single scalar value to the logger
         Args:
@@ -52,10 +52,10 @@ class Writer:
         raise NotImplementedError
 
     def write_scalar_dict(
-            self,
-            name: str,
-            scalar_dict: Dict[str, Any],
-            step: int,
+        self,
+        name: str,
+        scalar_dict: Dict[str, Any],
+        step: int,
     ) -> None:
         """Function that writes out all scalars from a given dictionary to the logger
         Args:
@@ -70,10 +70,10 @@ class Writer:
                 pass
 
     def write_scalar_dicts(
-            self,
-            names: List[str],
-            scalar_dicts: List[Dict[str, Any]],
-            step: int,
+        self,
+        names: List[str],
+        scalar_dicts: List[Dict[str, Any]],
+        step: int,
     ) -> None:
         # self.std_logger.info(scalar_dicts)
         self.std_logger.info(
@@ -81,9 +81,11 @@ class Writer:
                 [
                     '{}{} '.format(
                         colored('{}:'.format(k), 'light_magenta'),
-                        v
-                        if k != 'ETA'
-                        else str(datetime.timedelta(seconds=int(v))),
+                        (
+                            v
+                            if k != 'ETA'
+                            else str(datetime.timedelta(seconds=int(v)))
+                        ),
                     )
                     for k, v in dict(ChainMap(*scalar_dicts)).items()
                 ]
@@ -102,19 +104,19 @@ class TensorboardWriter(Writer):
         self.tb_writer = SummaryWriter(log_dir=str(log_dir))
 
     def write_image(
-            self,
-            name: str,
-            image: TensorType["H", "W", "C"],
-            step: int,
+        self,
+        name: str,
+        image: TensorType["H", "W", "C"],
+        step: int,
     ) -> None:
         image = to8b(image)
         self.tb_writer.add_image(name, image, step, dataformats="HWC")
 
     def write_scalar(
-            self,
-            name: str,
-            scalar: Union[float, torch.Tensor],
-            step: int,
+        self,
+        name: str,
+        scalar: Union[float, torch.Tensor],
+        step: int,
     ) -> None:
         self.tb_writer.add_scalar(name, scalar, step)
 

@@ -1,4 +1,6 @@
+from typing import Callable, List
 import torch
+from torch import Tensor
 from .cuda import _C
 
 
@@ -113,6 +115,6 @@ class MultiAnisomipInterpolation(torch.autograd.Function):
         return None, *dL_dmipmaps
 
 
-multi_anisomip_interp = (
+multi_anisomip_interp: Callable[[List, Tensor], Tensor] = (
     lambda mipmaps, points: MultiAnisomipInterpolation.apply(points, *mipmaps)
 )
