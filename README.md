@@ -4,9 +4,9 @@ Official PyTorch implementation of the paper:
 
 > **Rip-NeRF: Anti-aliasing Radiance Fields with Ripmap-Encoded Platonic Solids**
 >
-> ***Under Review***
+> ***SIGGRAPH 2024***
 >
-> Anonymous Authors
+> Junchen Liu*, Wenbo Hu\*, Zhuo Yang\*, Jianteng Chen, Guoliang Wang, Xiaoxue Chen, Yantong Cai, Huang-ang Gao, Hao Zhao
 >
 > <a href='TODO'><img src='https://img.shields.io/badge/arXiv-2307.11335-red'></a> <a href='https://junchenliu77.github.io/Rip-NeRF'><img src='https://img.shields.io/badge/Project-Video-Green'></a>
 
