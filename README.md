@@ -8,20 +8,18 @@ Official PyTorch implementation of the paper:
 >
 > Junchen Liu*, Wenbo Hu\*, Zhuo Yang\*, Jianteng Chen, Guoliang Wang, Xiaoxue Chen, Yantong Cai, Huang-ang Gao, Hao Zhao
 >
-> <a href='TODO'><img src='https://img.shields.io/badge/arXiv-2307.11335-red'></a> <a href='https://junchenliu77.github.io/Rip-NeRF'><img src='https://img.shields.io/badge/Project-Video-Green'></a>
+> <a href='https://arxiv.org/abs/2405.02386'><img src='https://img.shields.io/badge/arXiv-2405.02386-red'></a> <a href='https://junchenliu77.github.io/Rip-NeRF'><img src='https://img.shields.io/badge/Project-Video-Green'></a>
 
 <p align="center">
 <img src="assets/overview.png" width="100%"/>
 </p>
-
-
 > To render a pixel, we first cast a cone for each pixel, and then divide the cone into multiple conical frustums, which are further            characterized by anisotropic 3D Gaussians parameterized by their mean and covariance (𝝁, 𝚺). Next, to featurize a 3D Gaussian, we project it onto the unparalleled faces of the Platonic solid to form a 2D Gaussian (𝝁<sub>proj</sub>, 𝚺<sub>proj</sub>), while the Platonic solid's faces are represented by the Ripmap Encoding with learnable parameters. Subsequently, we perform tetra-linear interpolation on the Ripmap Encoding to query corresponding feature vectors for the 2D Gaussian, where the position and level used in the interpolation are determined by the mean and covariance of the 2D Gaussian, respectively. Finally, feature vectors from all Platonic solids' faces and the encoded view direction are aggregated together to estimate the color and density of the conical frustums by a tiny MLP.
+
+
 
 <p align="center">
 <img src="assets/teaser.png" width="100%"/>
 </p>
-
-
 > Qualitative and quantitative results of our Rip-NeRF and several representative baseline methods, e.g. Zip-NeRF, Tri-MipRF, etc. Rip-NeRF<sub>25k</sub> is a variant of Rip-NeRF that reduces the training iterations from 120𝑘 to 25𝑘 for better efficiency. The first and second rows in the left panel are results from the multi-scale Blender dataset and our newly captured real-world dataset, respectively. Our Rip-NeRF can render high-fidelity and aliasing-free images from novel viewpoints while maintaining efficiency.
 
 ## **Installation**
@@ -70,7 +68,14 @@ python main.py --ginc config_files/ms_blender.gin
 If you find the code useful for your work, please star this repo and consider citing:
 
 ```
-TODO
+@misc{liu2024ripnerf,
+    title={Rip-NeRF: Anti-aliasing Radiance Fields with Ripmap-Encoded Platonic Solids},
+    author={Junchen Liu and Wenbo Hu and Zhuo Yang and Jianteng Chen and Guoliang Wang and Xiaoxue Chen and Yantong Cai and Huan-ang Gao and Hao Zhao},
+    year={2024},
+    eprint={2405.02386},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
+}
 ```
 
 
