@@ -68,7 +68,7 @@ python main.py --ginc config_files/ms_blender.gin
 If you find the code useful for your work, please star this repo and consider citing:
 
 ```
-@inproceedings{neuropara,
+@inproceedings{liu2024ripnerf,
     title={Rip-NeRF: Anti-aliasing Radiance Fields with Ripmap-Encoded Platonic Solids},
     author={Junchen Liu and Wenbo Hu and Zhuo Yang and Jianteng Chen and Guoliang Wang and Xiaoxue Chen and Yantong Cai and Huan-ang Gao and Hao Zhao},
     year={2024},
