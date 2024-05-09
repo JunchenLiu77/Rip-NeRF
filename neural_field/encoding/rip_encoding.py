@@ -20,9 +20,8 @@ class RipEncoding(nn.Module):
             "golden_spiral",
         ] = "planotic_solid",
         n_vertices: int = 10,
-        level_offset: float = 0.0,
+        scale_factor: float = 2.0,
         include_xyz: bool = False,
-        learn_thetas: bool = False,
     ):
         super(RipEncoding, self).__init__()
         self.n_levels = n_levels
@@ -32,9 +31,8 @@ class RipEncoding(nn.Module):
         )
         self.feature_dim = feature_dim
         self.n_vertices = n_vertices
-        self.level_offset = level_offset
+        self.scale_factor = scale_factor
         self.include_xyz = include_xyz
-        self.learn_thetas = learn_thetas
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
         self.projection_matrix_list = []
@@ -148,11 +146,6 @@ class RipEncoding(nn.Module):
                 torch.zeros(n_vertices, plane_res, plane_res, feature_dim)
             ),
         )
-        if learn_thetas:
-            self.register_parameter(
-                "thetas",
-                nn.Parameter(torch.zeros(n_vertices)),
-            )
         self.init_parameters()
         self.dim_out = self.feature_dim * self.n_vertices + (
             3 if include_xyz else 0
@@ -163,8 +156,6 @@ class RipEncoding(nn.Module):
     def init_parameters(self) -> None:
         # Important for performance
         nn.init.uniform_(self.fm, -1e-2, 1e-2)
-        if self.learn_thetas:
-            nn.init.uniform_(self.thetas, -math.pi, math.pi)
 
     def update_ripmaps(self) -> None:
         ripmaps = []
@@ -195,15 +186,6 @@ class RipEncoding(nn.Module):
         input_list = []
         for i in range(self.n_vertices):
             P = self.projection_matrix_list[i]
-            if self.learn_thetas:
-                theta = self.thetas[i]
-                R2D = torch.tensor(
-                    [
-                        [torch.cos(theta), -torch.sin(theta)],
-                        [torch.sin(theta), torch.cos(theta)],
-                    ]
-                ).to(self.device)
-                P = R2D @ P
             means_proj = means @ P.T
             if occ_res is not None:
                 level = torch.empty_like(means_proj[..., :2]).fill_(
@@ -212,7 +194,7 @@ class RipEncoding(nn.Module):
             else:
                 covs_proj = P @ covs @ P.T
                 sigmas = torch.sqrt(torch.diagonal(covs_proj, dim1=-2, dim2=-1))
-                level = torch.log2(sigmas) + self.level_offset
+                level = torch.log2(sigmas * self.scale_factor)
             level = level + self.log2_phane_res
             level = torch.clamp(level, 0, self.n_levels - 1)
             input_list.append(means_proj)

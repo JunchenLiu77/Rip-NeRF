@@ -9,9 +9,9 @@ RayDataset.scene_type = 'nerf_synthetic'
 
 Trainer.base_exp_dir = './log'
 Trainer.exp_name = 'base'
-Trainer.eval_step = 25000
+Trainer.eval_step = 120000
 Trainer.log_step = 1000
-Trainer.max_steps = 25001
+Trainer.max_steps = 120001
 Trainer.target_sample_batch_size = 262144
 
 RipNerfModel.samples_per_ray = 1024
@@ -27,6 +27,5 @@ RipEncoding.plane_res = 512
 RipEncoding.feature_dim = 16
 RipEncoding.plane_distribution = "planotic_solid"
 RipEncoding.n_vertices = 10
-RipEncoding.level_offset = 1.0
+RipEncoding.scale_factor = 2.0
 RipEncoding.include_xyz = False
-RipEncoding.learn_thetas = False
